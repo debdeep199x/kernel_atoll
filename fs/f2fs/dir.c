@@ -1016,7 +1016,6 @@ int f2fs_fill_dentries(struct dir_context *ctx, struct f2fs_dentry_ptr *d,
 
 		/* check memory boundary before moving forward */
 		bit_pos += GET_DENTRY_SLOTS(le16_to_cpu(de->name_len));
-
 		if (unlikely(bit_pos > d->max ||
 				le16_to_cpu(de->name_len) > F2FS_NAME_LEN)) {
 			f2fs_msg(F2FS_I_SB(d->inode)->sb, KERN_WARNING,
