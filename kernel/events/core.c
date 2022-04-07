@@ -6659,7 +6659,8 @@ static void perf_event_addr_filters_exec(struct perf_event *event, void *data)
 	raw_spin_lock_irqsave(&ifh->lock, flags);
 	list_for_each_entry(filter, &ifh->list, entry) {
 		if (filter->path.dentry) {
-			event->addr_filters_offs[count] = 0;
+			event->addr_filter_ranges[count].start = 0;
+			event->addr_filter_ranges[count].size = 0;
 			restart++;
 		}
 
@@ -8659,13 +8660,11 @@ static void perf_event_addr_filters_apply(struct perf_event *event)
 			event->addr_filter_ranges[count].start = 0;
 			event->addr_filter_ranges[count].size = 0;
 
-		/*
-		 * Adjust base offset if the filter is associated to a binary
-		 * that needs to be mapped:
-		 */
-		if (filter->path.dentry)
-			event->addr_filters_offs[count] =
-				perf_addr_filter_apply(filter, mm);
+			perf_addr_filter_apply(filter, mm, &event->addr_filter_ranges[count]);
+		} else {
+			event->addr_filter_ranges[count].start = filter->offset;
+			event->addr_filter_ranges[count].size  = filter->size;
+		}
 
 		count++;
 	}
